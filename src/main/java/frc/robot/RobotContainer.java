@@ -216,7 +216,7 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -controller.getLeftTriggerAxis()));
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     controller
         .b()
