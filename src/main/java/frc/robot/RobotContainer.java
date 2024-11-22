@@ -35,6 +35,7 @@ import frc.robot.subsystems.flywheel.FlywheelIOSparkMax;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonSRX;
+import frc.robot.util.ControllerProfiles;
 import java.util.List;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.GyroSimulation;
@@ -150,6 +151,7 @@ public class RobotContainer {
                             swerveDriveSimulation
                                 .getDriveTrainSimulatedChassisSpeedsFieldRelative())));
         // simulation
+
         break;
 
       default:
@@ -211,15 +213,24 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    // Detect and fetch the active controller profile
+    ControllerProfiles.ControllerProfile activeProfile =
+        ControllerProfiles.detectControllerProfile();
+
+    // Configure the default command for driving the robot
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getLeftTriggerAxis()));
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+            () -> -controller.getRawAxis(activeProfile.leftYAxis), // Forward/backward
+            () -> -controller.getRawAxis(activeProfile.leftXAxis), // Strafe
+            () -> -controller.getRawAxis(activeProfile.rightXAxis) // Rotation
+            ));
+
+    // Configure button mappings with the active profile
+    controller.button(activeProfile.buttonX).onTrue(Commands.runOnce(drive::stopWithX, drive));
+
     controller
-        .b()
+        .button(activeProfile.buttonB)
         .onTrue(
             Commands.runOnce(
                     () ->
@@ -229,19 +240,24 @@ public class RobotContainer {
                                 : swerveDriveSimulation.getSimulatedDriveTrainPose()),
                     drive)
                 .ignoringDisable(true));
+
     controller
-        .a()
+        .button(activeProfile.buttonA)
         .whileTrue(
             Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
 
-    controller.leftTrigger(0.5).whileTrue(intake.runIntakeUntilNoteDetected());
     controller
-        .rightBumper()
+        .axisGreaterThan(activeProfile.leftTriggerAxis, 0.5)
+        .whileTrue(intake.runIntakeUntilNoteDetected());
+
+    controller
+        .button(activeProfile.rightBumper)
         .whileTrue(
             new StartEndCommand(
                 () -> flywheel.runVelocity(3000), () -> flywheel.runVelocity(0), flywheel));
-    controller.rightTrigger(0.5).and(controller.rightBumper()).whileTrue(intake.launchNote());
+
+    controller.axisGreaterThan(activeProfile.rightTriggerAxis, 0.5).whileTrue(intake.launchNote());
   }
 
   /**
