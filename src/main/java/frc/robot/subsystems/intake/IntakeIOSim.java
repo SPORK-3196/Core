@@ -31,6 +31,7 @@ public class IntakeIOSim implements IntakeIO {
             "Note", // the intake grabs game pieces of this type
             driveTrain, // specify the drivetrain to which the intake is attached to
             0.6, // the width of the intake
+            0.1, // the length of the intake
             IntakeSimulation.IntakeSide.BACK, // the intake is attached the back of the drivetrain
             1 // the intake can only hold 1 game piece at a time
             );

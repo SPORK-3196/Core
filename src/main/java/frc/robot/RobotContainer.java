@@ -227,7 +227,7 @@ public class RobotContainer {
             ));
 
     // Configure button mappings with the active profile
-    controller.button(activeProfile.buttonX).onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // controller.button(activeProfile.buttonX).onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     controller
         .button(activeProfile.buttonB)
@@ -241,22 +241,26 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
+    // RECORD VELOCITY OF SHOOTER MOTOR
     controller
         .button(activeProfile.buttonA)
         .whileTrue(
             Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
 
+    // PICKUP THE NOTE
     controller
         .axisGreaterThan(activeProfile.leftTriggerAxis, 0.5)
         .whileTrue(intake.runIntakeUntilNoteDetected());
 
+    // SET SHOOTER MOTOR VELOCITY
     controller
         .button(activeProfile.rightBumper)
         .whileTrue(
             new StartEndCommand(
                 () -> flywheel.runVelocity(3000), () -> flywheel.runVelocity(0), flywheel));
 
+    // SHOOT THE NOTE
     controller.axisGreaterThan(activeProfile.rightTriggerAxis, 0.5).whileTrue(intake.launchNote());
   }
 
