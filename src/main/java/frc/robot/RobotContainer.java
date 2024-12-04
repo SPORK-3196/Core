@@ -107,9 +107,9 @@ public class RobotContainer {
             DriveTrainSimulationConfig.Default()
                 .withGyro(GyroSimulation.getPigeon2())
                 .withSwerveModule(
-                    SwerveModuleSimulation.getMark4(
-                        DCMotor.getKrakenX60(1), // drive motor is a Kraken x60
-                        DCMotor.getFalcon500(1), // steer motor is a Falcon 500
+                    SwerveModuleSimulation.getMark4i(
+                        DCMotor.getNEO(4), // drive motor is a Kraken x60
+                        DCMotor.getNEO(4), // steer motor is a Falcon 500
                         Amps.of(60), // current limit: 60 Amps
                         SwerveModuleSimulation.WHEEL_GRIP.COLSONS.cof, // use COF of Colson Wheels
                         3 // l3 gear ratio
