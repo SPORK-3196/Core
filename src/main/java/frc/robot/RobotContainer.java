@@ -252,19 +252,19 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
 
-    // PICKUP THE NOTE
+    // PICKUP THE NOTE (LEFT TRIGGER)
     controller
         .axisGreaterThan(activeProfile.leftTriggerAxis, 0.5)
         .whileTrue(intake.runIntakeUntilNoteDetected());
 
-    // SET SHOOTER MOTOR VELOCITY
+    // SET SHOOTER MOTOR VELOCITY (RIGHT BUMPER)
     controller
         .button(activeProfile.rightBumper)
         .whileTrue(
             new StartEndCommand(
                 () -> flywheel.runVelocity(3000), () -> flywheel.runVelocity(0), flywheel));
 
-    // SHOOT THE NOTE
+    // SHOOT THE NOTE (RIGHT TRIGGER)
     controller.axisGreaterThan(activeProfile.rightTriggerAxis, 0.5).whileTrue(intake.launchNote());
   }
 
