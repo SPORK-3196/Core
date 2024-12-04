@@ -13,6 +13,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -41,7 +43,7 @@ import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.GyroSimulation;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
-import org.ironmaple.simulation.drivesims.SwerveModuleSimulation.DRIVE_WHEEL_TYPE;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -100,26 +102,26 @@ public class RobotContainer {
       case SIM:
         /* Sim robot, instantiate physics sim IO implementations */
 
-        /* create simulation for pigeon2 IMU (different IMUs have different measurement errors) */
-        final GyroSimulation gyroSimulation = GyroSimulation.createPigeon2();
+        // create and configures a drivetrain simulation configuration
+        final DriveTrainSimulationConfig driveTrainSimulationConfig =
+            DriveTrainSimulationConfig.Default()
+                .withGyro(GyroSimulation.getPigeon2())
+                .withSwerveModule(
+                    SwerveModuleSimulation.getMark4(
+                        DCMotor.getKrakenX60(1), // drive motor is a Kraken x60
+                        DCMotor.getFalcon500(1), // steer motor is a Falcon 500
+                        Amps.of(60), // current limit: 60 Amps
+                        SwerveModuleSimulation.WHEEL_GRIP.COLSONS.cof, // use COF of Colson Wheels
+                        3 // l3 gear ratio
+                        ))
+                .withCustomModuleTranslations(Drive.getModuleTranslations())
+                .withBumperSize(Inches.of(30), Inches.of(30));
+
         /* create a swerve drive simulation */
         this.swerveDriveSimulation =
             new SwerveDriveSimulation(
-                45,
-                0.65,
-                0.65,
-                0.74,
-                0.74,
-                SwerveModuleSimulation.getMark4( // creates a mark4 module
-                    DCMotor.getKrakenX60(1), // drive motor is a Kraken x60
-                    DCMotor.getFalcon500(1), // steer motor is a Falcon 500
-                    80, // current limit: 80 Amps
-                    DRIVE_WHEEL_TYPE.RUBBER, // rubber wheels
-                    3 // l3 gear ratio
-                    ),
-                gyroSimulation,
-                new Pose2d( // initial starting pose on field, set it to where-ever you want
-                    3, 3, new Rotation2d()));
+                driveTrainSimulationConfig, new Pose2d(3, 3, new Rotation2d()));
+
         SimulatedArena.getInstance()
             .addDriveTrainSimulation(swerveDriveSimulation); // register the drive train simulation
 
@@ -129,7 +131,10 @@ public class RobotContainer {
         drive =
             new Drive(
                 new GyroIOSim(
-                    gyroSimulation), // GyroIOSim is a wrapper around gyro simulation, that reads
+                    swerveDriveSimulation
+                        .getGyroSimulation()), // GyroIOSim is a wrapper around gyro simulation,
+                // that
+                // reads
                 // the simulation result
                 /* ModuleIOSim are edited such that they also wraps around module simulations */
                 new ModuleIOSim(swerveDriveSimulation.getModules()[0]),
@@ -151,7 +156,6 @@ public class RobotContainer {
                             swerveDriveSimulation
                                 .getDriveTrainSimulatedChassisSpeedsFieldRelative())));
         // simulation
-
         break;
 
       default:

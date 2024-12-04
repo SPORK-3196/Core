@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.SimulatedArena;
@@ -30,8 +32,7 @@ public class IntakeIOSim implements IntakeIO {
         new IntakeSimulation( // create intake simulation with no extension
             "Note", // the intake grabs game pieces of this type
             driveTrain, // specify the drivetrain to which the intake is attached to
-            0.6, // the width of the intake
-            0.1, // the length of the intake
+            Meters.of(0.6), // the width of the intake
             IntakeSimulation.IntakeSide.BACK, // the intake is attached the back of the drivetrain
             1 // the intake can only hold 1 game piece at a time
             );
