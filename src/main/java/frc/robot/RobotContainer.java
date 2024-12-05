@@ -89,13 +89,6 @@ public class RobotContainer {
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3));
         flywheel = new Flywheel(new FlywheelIOSparkMax());
-        // drive = new Drive(
-        // new GyroIOPigeon2(true),
-        // new ModuleIOTalonFX(0),
-        // new ModuleIOTalonFX(1),
-        // new ModuleIOTalonFX(2),
-        // new ModuleIOTalonFX(3));
-        // flywheel = new Flywheel(new FlywheelIOTalonFX());
         this.intake = new Intake(new IntakeIOTalonSRX());
         break;
 
@@ -108,11 +101,11 @@ public class RobotContainer {
                 .withGyro(GyroSimulation.getPigeon2())
                 .withSwerveModule(
                     SwerveModuleSimulation.getMark4i(
-                        DCMotor.getNEO(4), // drive motor is a Kraken x60
-                        DCMotor.getNEO(4), // steer motor is a Falcon 500
+                        DCMotor.getNEO(4), // drive motor is a NEO
+                        DCMotor.getNEO(4), // steer motor is a NEO
                         Amps.of(60), // current limit: 60 Amps
                         SwerveModuleSimulation.WHEEL_GRIP.COLSONS.cof, // use COF of Colson Wheels
-                        3 // l3 gear ratio
+                        2 // l2 gear ratio
                         ))
                 .withCustomModuleTranslations(Drive.getModuleTranslations())
                 .withBumperSize(Inches.of(30), Inches.of(30));
