@@ -56,13 +56,13 @@ public class ControllerProfiles {
       new ControllerProfile(
           1,
           0,
-          4, // Joystick Axes
+          2, // Joystick Axes
           3,
           2,
           1, // Buttons
-          2,
-          3,
-          5 // Triggers and Bumper
+          4,
+          5,
+          6 // Triggers and Bumper
           );
 
   // Method to detect the current profile based on the operating system
