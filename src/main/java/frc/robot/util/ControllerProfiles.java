@@ -39,7 +39,7 @@ public class ControllerProfiles {
   // Predefined profiles
   // Determine controller buttons in Advantage Scope using the Joysticks tab and selecting 'Generic
   // Joystick'
-  public static final ControllerProfile MACOS_BLUETOOTH_XBOX =
+  public static final ControllerProfile MACOS_XBOX =
       new ControllerProfile(
           1,
           0,
@@ -56,12 +56,12 @@ public class ControllerProfiles {
       new ControllerProfile(
           1,
           0,
-          2, // Joystick Axes
+          4, // Joystick Axes
           3,
           2,
           1, // Buttons
-          4,
-          5,
+          2,
+          3,
           6 // Triggers and Bumper
           );
 
@@ -71,7 +71,7 @@ public class ControllerProfiles {
 
     if (os.contains("mac")) {
       System.out.println("Detected OS: MacOS. Using MACOS_BLUETOOTH_XBOX profile.");
-      return MACOS_BLUETOOTH_XBOX;
+      return MACOS_XBOX;
     } else if (os.contains("win")) {
       System.out.println("Detected OS: Windows. Using WINDOWS_WIRED_XBOX profile.");
       return WINDOWS_WIRED_XBOX;
