@@ -24,12 +24,10 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
-import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
@@ -38,7 +36,7 @@ import java.util.Queue;
 import java.util.function.DoubleSupplier;
 
 /**
- * Module IO implementation for Spark Flex drive motor controller, Spark Max turn motor controller, and duty cycle
+ * Module IO implementation for Spark Max drive motor controller, Spark Max turn motor controller, and duty cycle
  * absolute encoder.
  */
 public class ModuleIOSpark implements ModuleIO {
@@ -70,7 +68,7 @@ public class ModuleIOSpark implements ModuleIO {
             case 2 -> backLeftZeroRotation;
             case 3 -> backRightZeroRotation;
             default -> new Rotation2d();};
-        driveSpark = new SparkFlex(
+        driveSpark = new SparkMax(
                 switch (module) {
                     case 0 -> frontLeftDriveCanId;
                     case 1 -> frontRightDriveCanId;
@@ -94,7 +92,7 @@ public class ModuleIOSpark implements ModuleIO {
         turnController = turnSpark.getClosedLoopController();
 
         // Configure drive motor
-        var driveConfig = new SparkFlexConfig();
+        var driveConfig = new SparkMaxConfig();
         driveConfig
                 .idleMode(IdleMode.kBrake)
                 .smartCurrentLimit(driveMotorCurrentLimit)
@@ -102,24 +100,13 @@ public class ModuleIOSpark implements ModuleIO {
         driveConfig
                 .encoder
                 .positionConversionFactor(driveEncoderPositionFactor)
-                .velocityConversionFactor(driveEncoderVelocityFactor)
-                .uvwMeasurementPeriod(10)
-                .uvwAverageDepth(2);
+                .velocityConversionFactor(driveEncoderVelocityFactor);
         driveConfig
                 .closedLoop
                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                 .pidf(
                         driveKp, 0.0,
                         driveKd, 0.0);
-        driveConfig
-                .signals
-                .primaryEncoderPositionAlwaysOn(true)
-                .primaryEncoderPositionPeriodMs((int) (1000.0 / odometryFrequency))
-                .primaryEncoderVelocityAlwaysOn(true)
-                .primaryEncoderVelocityPeriodMs(20)
-                .appliedOutputPeriodMs(20)
-                .busVoltagePeriodMs(20)
-                .outputCurrentPeriodMs(20);
         tryUntilOk(
                 driveSpark,
                 5,
@@ -138,23 +125,13 @@ public class ModuleIOSpark implements ModuleIO {
                 .absoluteEncoder
                 .inverted(turnEncoderInverted)
                 .positionConversionFactor(turnEncoderPositionFactor)
-                .velocityConversionFactor(turnEncoderVelocityFactor)
-                .averageDepth(2);
+                .velocityConversionFactor(turnEncoderVelocityFactor);
         turnConfig
                 .closedLoop
                 .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
                 .positionWrappingEnabled(true)
                 .positionWrappingInputRange(turnPIDMinInput, turnPIDMaxInput)
                 .pidf(turnKp, 0.0, turnKd, 0.0);
-        turnConfig
-                .signals
-                .absoluteEncoderPositionAlwaysOn(true)
-                .absoluteEncoderPositionPeriodMs((int) (1000.0 / odometryFrequency))
-                .absoluteEncoderVelocityAlwaysOn(true)
-                .absoluteEncoderVelocityPeriodMs(20)
-                .appliedOutputPeriodMs(20)
-                .busVoltagePeriodMs(20)
-                .outputCurrentPeriodMs(20);
         tryUntilOk(
                 turnSpark,
                 5,
